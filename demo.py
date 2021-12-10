@@ -3,6 +3,7 @@ import numpy as np
 import pigpio
 import threading
 from time import sleep
+from collections import deque
 
 speed_pulse = 5
 
@@ -21,6 +22,7 @@ capture = cv.VideoCapture(0)
 center = (None, None)
 max_height, max_width = None, None
 screen_center = (None, None)
+pts = deque(maxlen=16)
 
 ######################################################################
 
@@ -102,11 +104,17 @@ while True:
         
         M = cv.moments(contourOfInteres)
         center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+    
+        pts.appendleft(center)
         
-        if radius > 10:
-            cv.circle(orange_res, (int(x), int(y)), int(radius), (0, 255, 255), 5)
-            
-    cv.imshow('Inspector_Gadget', orange_res)
+    for i in range(1, len(pts)):
+        if pts[i - 1] is None or pts[i] is None:
+            continue
+
+        thickness = int(np.sqrt(16 / float(i + 1)) * 1.5)
+        cv.line(frame, pts[i - 1], pts[i], (100, 0, 100), thickness)
+
+    cv.imshow('Magic Trail', frame)
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
 
