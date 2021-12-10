@@ -48,7 +48,7 @@ def tilt_camera_left():
     while True:
         if center != (None, None) and screen_center != (None, None):
             if center[0] < screen_center[0] - delta_x:
-                if pi.get_servo_pulsewidth(pan) + speed_pulse <= 2500:
+                if pi.get_servo_pulsewidth(pan) + speed_pulse >= 2500:
                     pi.set_servo_pulsewidth(pan, 2500)
                 else:
                     pi.set_servo_pulsewidth(pan, pi.get_servo_pulsewidth(pan) + speed_pulse)
